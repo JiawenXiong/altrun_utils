@@ -22,11 +22,11 @@ def rename_file(old_path, new_path):
     except Exception as e:
         print("重命名失败:", e)
 
-def parse_file_gb2312(filepath) -> dict:
-    """使用 GB2312 编码读取文件并逐行打印内容"""
+def parse_file_GBK(filepath) -> dict:
+    """使用 GBK 编码读取文件并逐行打印内容"""
     try:
         config = {}
-        with open(filepath, 'r', encoding='gb2312') as f:
+        with open(filepath, 'r', encoding='GBK') as f:
             for line in f:
                 # print(line.rstrip('\n'))
                 args = line.split('|')
@@ -40,7 +40,7 @@ def parse_file_gb2312(filepath) -> dict:
     except FileNotFoundError:
         print(f"文件未找到: {filepath}")
     except UnicodeDecodeError:
-        print("文件编码不是 GB2312，解码失败")
+        print("文件编码不是 GBK，解码失败")
     except Exception as e:
         print(f"读取文件时发生错误: {e}")
     return {}
@@ -124,8 +124,8 @@ def compress_config_by_field4(config_map: dict) -> dict:
 
 
 def merge_config_file(config_file1, config_file2=None, config_file_target='ShortCutList.txt'):
-    map1 = parse_file_gb2312(config_file1)
-    map2 = parse_file_gb2312(config_file2) if config_file2 else {}
+    map1 = parse_file_GBK(config_file1)
+    map2 = parse_file_GBK(config_file2) if config_file2 else {}
     
     if config_file2:
         # 根据索引键进行合并
@@ -138,16 +138,16 @@ def merge_config_file(config_file1, config_file2=None, config_file_target='Short
     # 根据索引键进行压缩
     map4 = compress_config_by_field4(map3)
     print(f"合并后共 {len(map4)} 项")
-    # 输出合并后的结果到新文件
-    with open(config_file_target, 'w', encoding='gb2312') as f:
-        for key, value in map4.items():
-            f.write(" |".join(value) + '\n')
     # 备份输入文件
     backup1 = get_available_backup_name(config_file1, 'ori1')
     rename_file(config_file1, backup1)
     if config_file2:
         backup2 = get_available_backup_name(config_file2, 'ori2')
         rename_file(config_file2, backup2)
+    # 输出合并后的结果到新文件
+    with open(config_file_target, 'w', encoding='GBK') as f:
+        for key, value in map4.items():
+            f.write(" |".join(value) + '\n')
 
 def main():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
